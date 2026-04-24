@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App - Final QA</title>
+    <style>
+        :root { --primary: #007aff; --card-bg: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: -apple-system, sans-serif; }
+        
+        .iphone { 
+            width: 360px; height: 720px; background: #fff; border-radius: 45px; border: 10px solid #1a1a1a; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2); padding: 30px; display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        .search-area { display: flex; gap: 8px; margin-bottom: 25px; }
+        input { 
+            flex: 1; padding: 14px; border-radius: 14px; border: 1px solid #ddd; 
+            font-size: 16px; outline: none; background: #f9f9f9; transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); }
+        
+        button { 
+            background: var(--primary); color: #fff; border: none; padding: 0 20px; 
+            border-radius: 14px; cursor: pointer; font-weight: 600; 
+        }
+
+        .weather-card { 
+            background: var(--card-bg); border-radius: 30px; padding: 40px 20px; 
+            color: #fff; text-align: center; margin-bottom: 30px; box-shadow: 0 15px 30px rgba(0, 122, 255, 0.2);
+        }
+        .city-name { font-size: 28px; font-weight: 800; margin-bottom: 5px; }
+        .temp-val { font-size: 80px; font-weight: 200; margin: 15px 0; }
+        
+        .details-list { background: #f8f9fa; border-radius: 24px; padding: 5px 20px; }
+        .row { display: flex; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid #eee; }
+        .row:last-child { border-bottom: none; }
+        .label { color: #8e8e93; font-weight: 500; }
+        .val { color: #1c1c1e; font-weight: 700; }
+
+        #loader { text-align: center; font-size: 12px; color: var(--primary); margin-bottom: 10px; height: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="iphone">
+    <div class="search-area">
+        <input type="text" id="cityInput" placeholder="Busca una ciudad..." autocomplete="off">
+        <button onclick="getWeather()">Ir</button>
+    </div>
+
+    <div id="loader"></div>
+
+    <div class="weather-card">
+        <div class="city-name" id="resCity">¿A dónde vamos?</div>
+        <div id="resIcon" style="font-size: 50px; margin: 10px 0;">🌍</div>
+        <div class="temp-val" id="resTemp">--°</div>
+        <div id="resDesc" style="font-weight: 600; letter-spacing: 1px; font-size: 12px;">ESPERANDO ENTRADA</div>
+    </div>
+
+    <div class="details-list">
+        <div class="row"><span class="label">Temperature:</span><span class="val" id="valT">--°C</span></div>
+        <div class="row"><span class="label">Wind Speed:</span><span class="val" id="valW">-- km/h</span></div>
+        <div class="row"><span class="label">Weather:</span><span class="val" id="valD">--</span></div>
+    </div>
+</div>
+
+<script>
+// Función principal asíncrona
+async function getWeather() {
+    const city = document.getElementById('cityInput').value;
+    const loader = document.getElementById('loader');
+    if (!city) return alert("Por favor, ingresa una ciudad.");
+
+    loader.innerText = "Sincronizando datos...";
+
+    try {
+        // 1. Geocodificación
+        const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=es`);
+        const geoData = await geoResponse.json();
+
+        if (!geoData.results) {
+            loader.innerText = "";
+            return alert("Ciudad no encontrada en el sistema.");
+        }
+
+        const { latitude, longitude, name } = geoData.results[0];
+
+        // 2. Clima actual
+        const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto`);
+        const weatherData = await weatherResponse.json();
+        const { temperature, windspeed, weathercode } = weatherData.current_weather;
+
+        // Mapeo de códigos WMO
+        const weatherMap = {
+            0: ["Despejado", "☀️"], 1: ["Mayormente Despejado", "🌤️"],
+            2: ["Parcialmente Nublado", "⛅"], 3: ["Nublado", "☁️"],
+            61: ["Lluvia Ligera", "🌧️"], 95: ["Tormenta", "⛈️"]
+        };
+
+        const [text, icon] = weatherMap[weathercode] || ["Nublado", "☁️"];
+
+        // Actualización de UI con datos reales
+        document.getElementById('resCity').innerText = name;
+        document.getElementById('resTemp').innerText = `${Math.round(temperature)}°`;
+        document.getElementById('resIcon').innerText = icon;
+        document.getElementById('resDesc').innerText = text.toUpperCase();
+        document.getElementById('valT').innerText = `${temperature}°C`;
+        document.getElementById('valW').innerText = `${windspeed} km/h`;
+        document.getElementById('valD').innerText = text;
+
+    } catch (error) {
+        alert("Error de conexión con el servidor.");
+    } finally {
+        loader.innerText = "";
+    }
+}
+
+// FIX: Capturar tecla Enter para mejorar usabilidad
+document.getElementById('cityInput').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        getWeather();
+    }
+});
+</script>
+
+</body>
+</html>

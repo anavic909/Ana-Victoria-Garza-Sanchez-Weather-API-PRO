@@ -1,0 +1,44 @@
+{
+  "project_name": "Weather App Pro",
+  "developer": "Paola Viloria",
+  "date": "Abril 2026",
+  "version": "1.0.0",
+  "tech_stack": {
+    "frontend": ["HTML5", "CSS3", "JavaScript ES6"],
+    "apis": ["Open-Meteo Geocoding API", "Open-Meteo Weather Forecast API"]
+  },
+  "repository_structure": {
+    "root": ["README.md", "assets/"],
+    "src": ["index.html", "style.css", "app.js"]
+  },
+  "qa_testing": {
+    "test_cases": [
+      {
+        "type": "Valid",
+        "description": "Búsqueda de ciudades reales (Guadalajara, Tokio)",
+        "expected_result": "Despliegue correcto de temperatura y viento"
+      },
+      {
+        "type": "Error Handling",
+        "description": "Ingreso de ciudad inexistente",
+        "expected_result": "Alerta controlada de Ciudad no encontrada"
+      },
+      {
+        "type": "Edge Case",
+        "description": "Input vacío o caracteres especiales",
+        "expected_result": "Prevención de ejecución y sanitización de datos"
+      },
+      {
+        "type": "Usability",
+        "description": "Uso de tecla Enter para búsqueda",
+        "expected_result": "Ejecución del fetch sin recarga de página"
+      }
+    ]
+  },
+  "key_features": [
+    "Interacción híbrida botón/teclado",
+    "Mapeo de códigos WMO a iconos dinámicos",
+    "Arquitectura modular separando lógica de diseño",
+    "Interfaz responsiva con estética móvil"
+  ]
+}
