@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="iphone">
+        <div class="search-area">
+            <input type="text" id="cityInput" placeholder="Busca una ciudad..." autocomplete="off">
+            <button id="getWeatherBtn">Ir</button>
+        </div>
+
+        <div id="loader"></div>
+
+        <div class="weather-card">
+            <div class="city-name" id="resCity">¿A dónde vamos?</div>
+            <div id="resIcon" style="font-size: 50px; margin: 10px 0;">🌍</div>
+            <div class="temp-val" id="resTemp">--°</div>
+            <div id="resDesc" class="status-label">ESPERANDO ENTRADA</div>
+        </div>
+
+        <div class="details-list">
+            <div class="row"><span class="label">Temperature:</span><span class="val" id="valT">--°C</span></div>
+            <div class="row"><span class="label">Wind Speed:</span><span class="val" id="valW">-- km/h</span></div>
+            <div class="row"><span class="label">Weather:</span><span class="val" id="valD">--</span></div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
